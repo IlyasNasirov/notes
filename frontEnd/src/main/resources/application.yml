@@ -1,2 +1,4 @@
 server:
   port: 8090
+
+  baseUrl: localhost:8090/api/v1

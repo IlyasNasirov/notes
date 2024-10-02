@@ -1,24 +1,27 @@
 package com.example.frontend.service;
 
+import com.example.notes.dto.LoginDto;
+import com.example.notes.dto.MyUserDto;
+import com.example.notes.dto.NoteDto;
 import com.example.notes.entity.MyUser;
-import com.example.notes.entity.Note;
 
 import java.util.List;
 
 public interface ClientService {
 
-    String createUser(MyUser user);
+    List<NoteDto> getAllNotes(String username);
 
-    List getAllNotes(String username);
+    NoteDto getNoteById(String username, int noteId);
 
-    Note getNoteById(int id);
+    void addNote(String username, NoteDto noteDto);
 
-    String addNotes(String username, Note note);
+    void deleteNoteById(String username, int noteId);
 
-    void deleteNote(String username, int id);
+    NoteDto updateNote(String username, int noteId, NoteDto noteDto);
 
-    void updateNote(Note note, int id, String username);
+    MyUserDto login(LoginDto loginDto);
 
+    MyUserDto registerUser(MyUserDto userDto);
 
-
+    void logout();
 }

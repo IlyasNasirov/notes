@@ -1,49 +1,83 @@
 package com.example.frontend.service;
 
-import com.example.notes.entity.MyUser;
-import com.example.notes.entity.Note;
+import com.example.notes.dto.LoginDto;
+import com.example.notes.dto.MyUserDto;
+import com.example.notes.dto.NoteDto;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
 @Service
+
 public class ClientServiceImpl implements ClientService {
 
-    RestTemplate rest = new RestTemplate();
+    private final RestTemplate restTemplate;
+    private final String baseUrl;
 
-    @Override
-    public String createUser(MyUser user) {
-        return rest.postForObject("http://localhost:8080/api/v1/notes/new_user", user, String.class);
+    public ClientServiceImpl(RestTemplate restTemplate, @Value("${base.url}") String baseUrl) {
+        this.restTemplate = restTemplate;
+        this.baseUrl = baseUrl;
     }
 
     @Override
-    public List getAllNotes(String username) {
-        return rest.getForObject("http://localhost:8080/api/v1/notes/{username}", List.class, username);
+    public List<NoteDto> getAllNotes(String username) {
+        String url = baseUrl + "/users/{username}/notes";
+
+        ResponseEntity<List<NoteDto>> responseEntity = restTemplate
+                .exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                }, username);
+        return responseEntity.getBody();
     }
 
     @Override
-    public Note getNoteById(int id) {
-        return rest.getForObject("http://localhost:8080/api/v1/notes?id={id}", Note.class, id);
+    public NoteDto getNoteById(String username, int noteId) {
+        String url = baseUrl + "/users/{username}/notes/{noteId}";
+
+        ResponseEntity<NoteDto> responseEntity = restTemplate.getForEntity(url, NoteDto.class, username, noteId);
+        return responseEntity.getBody();
     }
 
     @Override
-    public String addNotes(String username, Note note) {
-        return rest.postForObject("http://localhost:8080/api/v1/notes/{username}", note, String.class, username);
+    public void addNote(String username, NoteDto noteDto) {
+        String url = baseUrl + "/users/{username}/notes";
+        restTemplate.postForEntity(url, noteDto, Void.class);
     }
 
     @Override
-    public void deleteNote(String username, int id) {
-        rest.delete("http://localhost:8080/api/v1/notes/{username}?id={id}", username, id);
+    public void deleteNoteById(String username, int noteId) {
+        String url = baseUrl + "/users/{username}/notes";
+        String urlWithParam= UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("noteId", noteId)
+                .buildAndExpand(username)
+                .toUriString();
+
+        restTemplate.exchange(urlWithParam, HttpMethod.DELETE, null, Void.class);
     }
 
     @Override
-    public void updateNote(Note note, int id, String username) {
-        rest.put("http://localhost:8080/api/v1/notes/{username}?id={id}", note, username, id);
+    public NoteDto updateNote(String username, int noteId, NoteDto noteDto) {
+        return null;
     }
 
-    public String method() {
-        return rest.getForObject("http://localhost:8080/api/v1/notes", String.class);
+    @Override
+    public MyUserDto login(LoginDto loginDto) {
+        return null;
     }
 
+    @Override
+    public MyUserDto registerUser(MyUserDto userDto) {
+        return null;
+    }
+
+    @Override
+    public void logout() {
+
+    }
 }

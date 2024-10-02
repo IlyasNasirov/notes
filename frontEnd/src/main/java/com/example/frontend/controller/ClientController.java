@@ -67,7 +67,7 @@ public class ClientController {
     @GetMapping("{username}/update_note")
     public String updateNote(@RequestParam("id") int id,
                              Model model) {
-        Note note = service.getNoteById(id);
+        Note note = service.getNote(id);
         model.addAttribute("note", note);
         return "update_note";
     }
