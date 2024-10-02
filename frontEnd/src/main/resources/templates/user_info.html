@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div th:object="${username}">
+    <p>show info <span th:text="${username}">username</span></br></p>
+
+</div>
+<div>
+  <p>  <button th:onclick="|location.href='@{/notes/{username}/all_note(username=${username})}'|">show notes</button></p>
+  <p>  <button th:onclick="|location.href='@{/notes/{username}/add_note(username=${username})}'|">create note</button></p>
+</div>
+
+
+
+
+</body>
+</html>

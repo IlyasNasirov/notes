@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"><head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div th:each="note : ${notes}">
+    <span th:text="${note.title}">title</span></br>
+    <span th:text="${note.text}">text</span>
+
+    <button th:onclick="|location.href='@{/notes/{username}/update_note(id=${note.id},username=${username})}'|" >update</button>
+
+    <button th:onclick="|location.href='@{/notes/{username}/delete_note(id=${note.id},username=${username})}'|" >delete</button>
+</div>
+<button th:onclick="|location.href='@{/notes/{username}(username=${username})}'|" >back</button>
+
+
+</body>
+</html>

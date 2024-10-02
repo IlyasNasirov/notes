@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <form  th:method="POST" th:object="${note}">
+
+        <input type="text" th:field="*{title}">
+        <input type="text" th:field="*{text}">
+        <input type="submit" value="add">
+
+    </form>
+
+
+</div>
+<button th:onclick="|location.href='@{/notes/{username}(username=${username})}'|" >back</button>
+
+</body>
+</html>
