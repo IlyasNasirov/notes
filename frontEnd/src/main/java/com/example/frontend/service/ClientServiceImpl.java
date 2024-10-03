@@ -53,7 +53,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void deleteNoteById(String username, int noteId) {
         String url = baseUrl + "/users/{username}/notes";
-        String urlWithParam= UriComponentsBuilder.fromHttpUrl(url)
+        String urlWithParam = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("noteId", noteId)
                 .buildAndExpand(username)
                 .toUriString();
@@ -63,21 +63,28 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public NoteDto updateNote(String username, int noteId, NoteDto noteDto) {
-        return null;
+        String url = baseUrl + "/users/{username}/notes/{noteId}";
+        ResponseEntity<NoteDto> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(noteDto), NoteDto.class, username, noteId);
+        return responseEntity.getBody();
     }
 
     @Override
     public MyUserDto login(LoginDto loginDto) {
-        return null;
+        String url = baseUrl + "/login";
+        ResponseEntity<MyUserDto> responseEntity = restTemplate.postForEntity(url, loginDto, MyUserDto.class);
+        return responseEntity.getBody();
     }
 
     @Override
     public MyUserDto registerUser(MyUserDto userDto) {
-        return null;
+        String url = baseUrl + "/register";
+        ResponseEntity<MyUserDto> responseEntity = restTemplate.postForEntity(url, userDto, MyUserDto.class);
+        return responseEntity.getBody();
     }
 
     @Override
     public void logout() {
-
+        String url = baseUrl + "/logout";
+        restTemplate.exchange(url, HttpMethod.POST, null, Void.class);
     }
 }

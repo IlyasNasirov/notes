@@ -1,10 +1,9 @@
 package com.example.frontend.controller;
 
 import com.example.frontend.service.ClientService;
-import com.example.notes.entity.MyUser;
+import com.example.notes.dto.NoteDto;
 import com.example.notes.entity.Note;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,32 +17,19 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/notes")
+@RequiredArgsConstructor
 public class ClientController {
 
-    @Autowired
-    ClientService service;
+    private final ClientService clientService;
 
     @GetMapping
     public String MainPage() {
         return "home";
     }
 
-    @PostMapping
-    public String saveUser(@ModelAttribute MyUser user) {
-        service.createUser(user);
-        return "user_info";
-    }
-
-    @GetMapping("/new_user")
-    public String createUser(Model model) {
-        model.addAttribute("newUser", new MyUser());
-        return "registration";
-    }
-
-
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{username}")
-    public String UserMenu(@PathVariable String username, Model model) {
+    public String UserMenu(@PathVariable String username,
+                           Model model) {
 
         model.addAttribute("username", username);
         return "user_info";
@@ -51,46 +37,55 @@ public class ClientController {
 
 
     @GetMapping("/{username}/all_note")
-    public String getAllNotes(@PathVariable String username, Model model) {
-        List<Note> notes = service.getAllNotes(username);
+    public String getAllNotes(@PathVariable String username,
+                              Model model) {
+
+        List<NoteDto> notes = clientService.getAllNotes(username);
         model.addAttribute("notes", notes);
         return "all_notes";
     }
 
     @GetMapping("{username}/delete_note")
     public String deleteNote(@PathVariable String username,
-                             @RequestParam("id") int id) {
-        service.deleteNote(username, id);
+                             @RequestParam("id") int noteId) {
+
+        clientService.deleteNoteById(username, noteId);
         return "redirect:/notes/{username}/all_note";
     }
 
     @GetMapping("{username}/update_note")
-    public String updateNote(@RequestParam("id") int id,
+    public String updateNote(@PathVariable String username,
+                             @RequestParam("noteId") int noteId,
                              Model model) {
-        Note note = service.getNote(id);
-        model.addAttribute("note", note);
+
+        NoteDto noteDto = clientService.getNoteById(username, noteId);
+        model.addAttribute("note", noteDto);
         return "update_note";
     }
 
     @PostMapping("{username}/update_note")
     public String updatedNote(@PathVariable String username,
-                              @RequestParam int id,
-                              @ModelAttribute Note note) {
-        service.updateNote(note, id, username);
+                              @RequestParam int noteId,
+                              @ModelAttribute NoteDto noteDto) {
+
+        clientService.updateNote(username, noteId, noteDto);
         return "redirect:/notes/{username}/all_note";
     }
 
     @GetMapping("/{username}/note")
-    public String createNote(@PathVariable String username, Model model) {
+    public String createNote(@PathVariable String username,
+                             Model model) {
+
         model.addAttribute("note", new Note());
         return "add_note";
     }
 
     @PostMapping("/{username}/note")
-    public String saveNote(@PathVariable String username, @ModelAttribute Note note) {
-        service.addNotes(username, note);
+    public String saveNote(@PathVariable String username,
+                           @ModelAttribute NoteDto noteDto) {
+
+        clientService.addNote(username, noteDto);
         return "redirect:/notes/{username}/all_note";
     }
-
 
 }
